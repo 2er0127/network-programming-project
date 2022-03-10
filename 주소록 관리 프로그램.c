@@ -3,8 +3,8 @@
 #include <string.h>
 
 typedef struct {
-    char name[20];
-    char callNum[30];
+    char name[30];
+    char callNum[50];
     char gender[10];
     int age;
 } Friend;
@@ -21,12 +21,14 @@ void initInfo(Info*);
 void printMenu();
 void inputFriend(Friend*, Info*);
 void calculate(Friend*, Info*);
-void friendInfo(Info* info);
+void friendInfo(Info*);
 
 int main() {
     Friend *friend = malloc(sizeof(Friend));
     Info* info = malloc(sizeof(Info));
-    int num;
+    int num = 0;
+    char findName[30];
+    char delName[30];
     
     initInfo(info);
     
@@ -57,11 +59,25 @@ int main() {
             case 3 :
                 printf("3번 개별 신상 정보 조회를 선택하셨습니다.\n");
                 printf("조회할 이름 입력 : ");
+                scanf("%s", findName);
+                
+                if (!strcmp(findName, friend->name))
+                    printf("이름 : %s, 휴대폰 번호 : %s, 성별 : %s, 나이 : %d\n", friend->name, friend->callNum, friend->gender, friend->age);
+                else
+                    printf("[%s]을/를 조회할 수 없습니다.\n", findName);
                 
                 break;
                 
             case 4 :
                 printf("4번 개별 신상 정보 삭제를 선택하셨습니다.\n");
+                printf("삭제할 이름 입력 : ");
+                scanf("%s", delName);
+                
+                if (!strcmp(delName, friend->name))
+                    printf("[%s] 학생의 정보를 삭제했습니다.\n", delName);
+                else
+                    printf("[%s] 학생의 정보가 없습니다.\n", delName);
+                
                 break;
                 
             case 5 :
@@ -110,7 +126,7 @@ void calculate(Friend* friend, Info* info) {
         info->min = friend[info->count].age;
     if (strcmp(friend[info->count].gender, "M") == 0)
         info->mCount++;
-    else if (strcmp(friend[info->count].gender, "F") == 0)
+    if (strcmp(friend[info->count].gender, "F") == 0)
         info->fCount++;
     info->count++;
 }
