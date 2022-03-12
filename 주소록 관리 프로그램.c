@@ -1,3 +1,5 @@
+// 2019100991 이선아
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -10,27 +12,31 @@ typedef struct {
 } Friend;
 
 typedef struct {
-    int count; // 친구 수
+    int count; // 총 친구 수
     int max; // 최고령
     int min; // 최저령
-    int mCount; // 남성
-    int fCount; // 여성
+    int mCount; // 남성 수
+    int fCount; // 여성 수
 } Info;
 
 void initInfo(Info*);
 void printMenu();
+int checkSize(Friend*, Info*, int);
 void inputFriend(Friend*, Info*);
 void calculate(Friend*, Info*);
-void friendInfo(Info*);
+void friendInfo(Friend*, Info*);
 
 int main() {
-    Friend *friend = malloc(sizeof(Friend)*100);
+    int defaultSize = 50; // 기본값
+    Friend *friend = malloc(sizeof(Friend)*defaultSize);
     Info* info = malloc(sizeof(Info));
     int num = 0;
-    int flag;
+    int searchFlag;
+    int delFlag;
     char findName[20];
     char delName[20];
     
+    info->count = 0;
     initInfo(info);
     
     while(1) {
@@ -43,7 +49,7 @@ int main() {
                 printf("1번 개별 신상 정보 입력을 선택하셨습니다.\n");
                 
                 inputFriend(friend, info);
-                calculate(friend, info);
+                defaultSize = checkSize(friend, info, defaultSize);
                 
                 break;
                 
@@ -53,12 +59,12 @@ int main() {
                     printf("이름 : %s, 휴대폰 번호 : %s, 성별 : %s, 나이 : %d\n", friend[i].name, friend[i].callNum, friend[i].gender, friend[i].age);
                 }
                 
-                friendInfo(info);
+                friendInfo(friend, info);
                 
                 break;
                 
             case 3 :
-                flag = 1;
+                searchFlag = 1;
                 printf("3번 개별 신상 정보 조회를 선택하셨습니다.\n");
                 printf("조회할 이름 입력 : ");
                 scanf("%s", findName);
@@ -66,27 +72,34 @@ int main() {
                 for(int i = 0; i < info->count; i++) {
                     if (!strcmp(findName, friend[i].name)) {
                         printf("이름 : %s, 휴대폰 번호 : %s, 성별 : %s, 나이 : %d\n", friend[i].name, friend[i].callNum, friend[i].gender, friend[i].age);
-                        flag = 0;
+                        searchFlag = 0; // 일치하는 이름이 있다면 플래그를 0으로 설정.
                     }
                 }
-                if(flag)
+                if(searchFlag) // = (searchFlag = 1)
                     printf("[%s]을/를 조회할 수 없습니다.\n", findName);
                 
                 break;
                 
             case 4 :
-                flag = 1;
+                delFlag = 1;
                 printf("4번 개별 신상 정보 삭제를 선택하셨습니다.\n");
                 printf("삭제할 이름 입력 : ");
                 scanf("%s", delName);
                 
                 for(int i = 0; i < info->count; i++) {
                     if (!strcmp(delName, friend[i].name)) {
+                        delFlag = 0; // 일치하는 이름이 있다면 플래그를 0으로 설정.
+                        for (int j = i; j < info->count - 1; j++) {
+                            friend[j] = friend[j + 1];
+                        }
+                        info->count--;
+                        i--;
+                        
                         printf("[%s] 학생의 정보를 삭제했습니다.\n", delName);
-                        flag = 0;
                     }
                 }
-                if(flag)
+
+                if(delFlag) // = (delFlag = 1)
                     printf("[%s] 학생의 정보가 없습니다.\n", delName);
                 
                 break;
@@ -110,14 +123,28 @@ void printMenu() {
     printf("원하시는 메뉴를 선택해주세요 ");
 }
 
-void initInfo(Info* info) {
-    info->count = 0;
-    info->max = 0;
-    info->min = 99999;
-    info->mCount = 0;
-    info->fCount = 0;
+// 동적 할당
+int checkSize(Friend* friend, Info* info, int size) {
+   if (info->count == size) {
+      size *= 2; // 기본값 50
+      realloc(friend, sizeof(Friend) * size);
+   }
+   return size;
 }
 
+// 계산을 위한 초기값
+void initInfo(Info* info) {
+    info->max = 0;
+    if (info->count == 0)
+        info->min = 0;
+    else
+        info->min = 99999;
+    info->mCount = 0;
+    info->fCount = 0;
+
+}
+
+// 메뉴 1번 개별 신상 정보 입력
 void inputFriend(Friend* friend, Info* info) {
     printf("영문 이름을 입력해 주세요 : ");
     scanf("%s", friend[info->count].name);
@@ -128,21 +155,30 @@ void inputFriend(Friend* friend, Info* info) {
     printf("나이를 입력해주세요 (숫자만 입력) : ");
     scanf("%d", &friend[info->count].age);
     printf("입력이 완료되었습니다.\n");
+    
+    info->count++; // 총 친구 수++
 }
 
+// 신상 정보 계산기
 void calculate(Friend* friend, Info* info) {
-    if(friend[info->count].age > info->max)
-        info->max = friend[info->count].age;
-    if(friend[info->count].age < info->min)
-        info->min = friend[info->count].age;
-    if (strcmp(friend[info->count].gender, "M") == 0)
-        info->mCount++;
-    else if (strcmp(friend[info->count].gender, "F") == 0)
-        info->fCount++;
-    info->count++;
+    initInfo(info);
+    
+    for (int i = 0; i < info->count; i++) {
+        if (friend[i].age > info->max)
+            info->max = friend[i].age;
+        if (friend[i].age < info->min)
+            info->min = friend[i].age;
+        if (strcmp(friend[i].gender, "M") == 0)
+            info->mCount++;
+        else if (strcmp(friend[i].gender, "F") == 0)
+            info->fCount++;
+    }
 }
 
-void friendInfo(Info* info) {
+// 메뉴 2번 전체 신상 정보 출력
+void friendInfo(Friend* friend, Info* info) {
+    calculate(friend, info);
+    
     printf("총 %d명\n", info->count);
     printf("남자 : %d명\n", info->mCount);
     printf("여자 : %d명\n", info->fCount);
