@@ -5,15 +5,11 @@
 #include <arpa/inet.h>
 #include <sys/socket.h>
 #define BUF_SIZE 1024
-void error_handling(char* message);
+void error_handling(char* grade);
 
 int main(int argc, char* argv[]) {
     int sock;
-    int kor[BUF_SIZE];
-    int eng[BUF_SIZE];
-    int math[BUF_SIZE];
-    int tot;
-    float avg;
+    char score[BUF_SIZE];
     char grade;
     int str_len;
     
@@ -38,23 +34,18 @@ int main(int argc, char* argv[]) {
     else
         puts("연결하는 중입니다........");
     
-    for(int i = 0; i < 3; i++) {
-        fputs("국어 점수를 입력해주세요 : ", stdout);
-        fgets(kor, BUF_SIZE, stdin);
-        write(sock, kor, strlen(kor));
-        
-        fputs("영어 점수를 입력해주세요 : ", stdout);
-        fgets(eng, BUF_SIZE, stdin);
-        write(sock, eng, strlen(eng));
-        
-        fputs("수학 점수를 입력해주세요 : ", stdout);
-        fgets(math, BUF_SIZE, stdin);
-        write(sock, math, strlen(math));
-        
-        read(sock, (char*) &grade, BUF_SIZE);
-        
-        printf("당신의 학점은 : %c 입니다.\n", grade);
-    }
+    printf("국어 점수를 입력하세요 : ");
+    scanf("%d", (int*) &score[0]);
+    printf("영어 점수를 입력하세요 : ");
+    scanf("%d", (int*) &score[1]);
+    printf("수학 점수를 입력하세요 : ");
+    scanf("%d", (int*) &score[2]);
+    
+    write(sock, score, strlen(score));
+    
+    read(sock, *grade, 1);
+    
+    printf("당신의 학점은 %c 입니다.\n", grade);
     
     close(sock);
     
