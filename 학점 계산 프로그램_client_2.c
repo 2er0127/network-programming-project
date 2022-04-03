@@ -9,9 +9,9 @@ void error_handling(char* message);
 
 int main(int argc, char* argv[]) {
     int sock;
-    int kor[BUF_SIZE];
-    int eng[BUF_SIZE];
-    int math[BUF_SIZE];
+    int kor;
+    int eng;
+    int math;
     int tot;
     float avg;
     char grade;
@@ -38,23 +38,21 @@ int main(int argc, char* argv[]) {
     else
         puts("연결하는 중입니다........");
     
-    for(int i = 0; i < 3; i++) {
-        fputs("국어 점수를 입력해주세요 : ", stdout);
-        fgets(kor, BUF_SIZE, stdin);
-        write(sock, kor, strlen(kor));
+    fputs("국어 점수를 입력해주세요 : ", stdout);
+    fgets(kor, BUF_SIZE, stdin);
+    write(sock, kor, strlen(kor));
         
-        fputs("영어 점수를 입력해주세요 : ", stdout);
-        fgets(eng, BUF_SIZE, stdin);
-        write(sock, eng, strlen(eng));
+    fputs("영어 점수를 입력해주세요 : ", stdout);
+    fgets(eng, BUF_SIZE, stdin);
+    write(sock, eng, strlen(eng));
         
-        fputs("수학 점수를 입력해주세요 : ", stdout);
-        fgets(math, BUF_SIZE, stdin);
-        write(sock, math, strlen(math));
+    fputs("수학 점수를 입력해주세요 : ", stdout);
+    fgets(math, BUF_SIZE, stdin);
+    write(sock, math, strlen(math));
         
-        read(sock, (char*) &grade, BUF_SIZE);
+    read(sock, (char*) &grade, BUF_SIZE);
         
-        printf("당신의 학점은 : %c 입니다.\n", grade);
-    }
+    printf("당신의 학점은 : %c 입니다.\n", grade);
     
     close(sock);
     

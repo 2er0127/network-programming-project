@@ -18,7 +18,7 @@ int main(int argc, char* argv[]) {
     int str_len;
     
     struct sockaddr_in serv_addr, client_addr;
-    soclen_t client_addr_size;
+    socklen_t client_addr_size;
     
     if(argc != 2) {
         printf("Usage : %s <PORT>\n", argv[0]);
@@ -42,7 +42,7 @@ int main(int argc, char* argv[]) {
     
     client_addr_size = sizeof(client_addr);
     
-    for(int i = 0; i < 5 i++) {
+    for(int i = 0; i < 5; i++) {
         client_sock = accept(serv_sock, (struct sockaddr*) &client_addr, &client_addr_size);
         if(client_sock == -1)
             error_handling("accept error");
