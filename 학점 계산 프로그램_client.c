@@ -31,9 +31,12 @@ int main(int argc, char* argv[]) {
     
     if(connect(sock, (struct sockaddr*) &serv_addr, sizeof(serv_addr)) == -1)
         error_handling("connect error");
-    else
-        puts("연결하는 중입니다........");
+    else {
+        printf("연결하는 중입니다........\n");
+        printf("...............\n");
+    }
     
+    printf("학점 계산 프로그램입니다.\n");
     printf("국어 점수를 입력하세요 : ");
     scanf("%d", (int*) &score[0]);
     printf("영어 점수를 입력하세요 : ");
@@ -43,7 +46,7 @@ int main(int argc, char* argv[]) {
     
     write(sock, score, strlen(score));
     
-    read(sock, *grade, 1);
+    read(sock, &grade, 1);
     
     printf("당신의 학점은 %c 입니다.\n", grade);
     

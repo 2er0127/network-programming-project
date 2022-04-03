@@ -70,7 +70,7 @@ int main(int argc, char* argv[]) {
 }
 
 void error_handling(char* score) {
-    fputs(grade, stderr);
+    fputs(score, stderr);
     fputc('\n', stderr);
     exit(1);
 }
