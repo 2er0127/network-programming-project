@@ -38,20 +38,24 @@ int main(int argc, char* argv[]) {
         printf("GAME START!\n");
     }
     
-    // 서버로 부터 정답 숫자를 읽어와 변수에 저장해두기.
-    read(sock, random, sizeof(random));
+    // 서버로 부터 정답 숫자를 읽어와 변수에 저장
+    if(read(sock, random, sizeof(random)) == -1)
+        error_handling("c-random read error");
     
     printf("1에서 50사이의 숫자를 입력하세요 : ");
     scanf("%d", &getNum);
     
+    if(write(sock, &getNum, sizeof(getNum)) == -1)
+        error_handling("c-getNum write error");
+    
     // 입력한 값과 정답 매칭
-    read(sock, hint, BUF_SIZE);
-    printf("%c\n", hint);
+    if(read(sock, hint, sizeof(hint)-1) == -1)
+        error_handling("c-hint read error");
+    printf("%s\n", hint);
     
+    close(sock);
     
-    
-    
-    
+    return 0;
 }
 
 void error_handling(char *message) {

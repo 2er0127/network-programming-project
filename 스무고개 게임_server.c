@@ -45,22 +45,32 @@ int main(int argc, char* argv[]) {
     
     srand(time(NULL));
     random = (rand() % 50) + 1; // 1~50사이의 랜덤 숫자를 생성하여 random 변수에 저장한다.
-    printf("%d", random);
+    printf("%d\n", random);
     
-    write(client_sock, random, sizeof(random));
+    if(write(client_sock, random, sizeof(random)) == -1)
+        error_handling("s-random write error");
     
     // 클라이언트에서 입력한 숫자를 받아오기
-    read(client_sock, getNum, BUF_SIZE);
+    if(read(client_sock, &getNum, sizeof(getNum)) == -1)
+        error_handling("s-getNum read error");
     
     if(getNum > random)
-        hint[1] = "입력하신 값보다 작습니다.\n";
+        strcpy(hint, "입력하신 값보다 작습니다.\n");
     else if(getNum < random)
-        hint[2] = "입력하신 값보다 큽니다.\n";
+        strcpy(hint, "입력하신 값보다 큽니다.\n");
+    else if(getNum == random)
+        strcpy(hint, "정답입니다!\n");
     else
-        hint[0] = "정답입니다!\n";
+        strcpy(hint, "잘못된 값입니다.\n");
     
+    // 클라이언트에 보여질 힌트 문자열
+    if(write(client_sock, hint, sizeof(hint)) == -1)
+        error_handling("s-hint write error");
     
+    close(client_sock);
+    close(serv_sock);
     
+    return 0;
 }
 
 void error_handling(char *message) {
