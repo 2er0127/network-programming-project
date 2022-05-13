@@ -47,7 +47,7 @@ int main(int argc, char* argv[]) {
     random = (rand() % 50) + 1; // 1~50사이의 랜덤 숫자를 생성하여 random 변수에 저장한다.
     printf("%d\n", random);
     
-    if(write(client_sock, random, sizeof(random)) == -1)
+    if(write(client_sock, &random, sizeof(random)) == -1)
         error_handling("s-random write error");
     
     // 클라이언트에서 입력한 숫자를 받아오기

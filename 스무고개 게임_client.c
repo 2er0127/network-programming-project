@@ -39,7 +39,7 @@ int main(int argc, char* argv[]) {
     }
     
     // 서버로 부터 정답 숫자를 읽어와 변수에 저장
-    if(read(sock, random, sizeof(random)) == -1)
+    if(read(sock, &random, sizeof(random)) == -1)
         error_handling("c-random read error");
     
     printf("1에서 50사이의 숫자를 입력하세요 : ");
