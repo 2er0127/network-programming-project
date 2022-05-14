@@ -12,6 +12,7 @@ int main(int argc, char* argv[]) {
     int sock;
     int getNum; // 클라이언트가 입력받는 숫자
     int random;
+    int count = 0;
     char hint[BUF_SIZE];
     int str_len;
     
@@ -42,16 +43,28 @@ int main(int argc, char* argv[]) {
     if(read(sock, &random, sizeof(random)) == -1)
         error_handling("c-random read error");
     
-    printf("1에서 50사이의 숫자를 입력하세요 : ");
-    scanf("%d", &getNum);
+    // 반복문 시작
+    for(int i = 0; i < 20; i++) {
+        printf("1에서 50사이의 숫자를 입력하세요 : ");
+        scanf("%d", &getNum);
     
-    if(write(sock, &getNum, sizeof(getNum)) == -1)
-        error_handling("c-getNum write error");
+        if(write(sock, &getNum, sizeof(getNum)) == -1)
+            error_handling("c-getNum write error");
     
-    // 입력한 값과 정답 매칭
-    if(read(sock, hint, sizeof(hint)-1) == -1)
-        error_handling("c-hint read error");
-    printf("%s\n", hint);
+        // 입력한 값과 정답 매칭
+        if(read(sock, &hint, BUF_SIZE) == -1)
+            error_handling("c-hint read error");
+
+        if(getNum == random) {
+            printf("%s\n", hint);
+            if(read(sock, &count, sizeof(count)) == -1)
+                error_handling("c-count read error");
+            printf("%d\n", ntohl(count));
+            break;
+        }
+        else
+            printf("%s\n", hint);
+    }
     
     close(sock);
     

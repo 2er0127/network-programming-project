@@ -13,6 +13,8 @@ int main(int argc, char* argv[]) {
     int serv_sock, client_sock;
     int random, getNum;
     char hint[BUF_SIZE];
+    int count = 0;
+    int converted_count;
     int str_len;
     
     struct sockaddr_in serv_addr, client_addr;
@@ -50,22 +52,35 @@ int main(int argc, char* argv[]) {
     if(write(client_sock, &random, sizeof(random)) == -1)
         error_handling("s-random write error");
     
-    // 클라이언트에서 입력한 숫자를 받아오기
-    if(read(client_sock, &getNum, sizeof(getNum)) == -1)
-        error_handling("s-getNum read error");
+    // 반복문 시작
+    for(int i = 0; i < 20; i++) {
+        // 클라이언트에서 입력한 숫자를 받아오기
+        if(read(client_sock, &getNum, sizeof(getNum)) == -1)
+            error_handling("s-getNum read error");
     
-    if(getNum > random)
-        strcpy(hint, "입력하신 값보다 작습니다.\n");
-    else if(getNum < random)
-        strcpy(hint, "입력하신 값보다 큽니다.\n");
-    else if(getNum == random)
-        strcpy(hint, "정답입니다!\n");
-    else
-        strcpy(hint, "잘못된 값입니다.\n");
+        if(getNum > random)
+            strcpy(hint, "입력하신 값보다 작습니다.\n");
+        else if(getNum < random)
+            strcpy(hint, "입력하신 값보다 큽니다.\n");
+        else if(getNum == random) {
+            strcpy(hint, "정답입니다!\n");
+            count = i + 1;
+            write(client_sock, (char*) &hint, sizeof(hint));
+            break;
+        }
+        else
+            strcpy(hint, "잘못된 값입니다.\n");
     
-    // 클라이언트에 보여질 힌트 문자열
+    // 클라이언트에 보여질 힌트
     if(write(client_sock, hint, sizeof(hint)) == -1)
         error_handling("s-hint write error");
+        
+    }
+    
+    // 바이트 오더링
+    converted_count = htonl(count);
+    if(write(client_sock, &converted_count, sizeof(converted_count)) == -1)
+        error_handling("s-count write error");
     
     close(client_sock);
     close(serv_sock);
