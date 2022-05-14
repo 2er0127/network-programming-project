@@ -76,10 +76,9 @@ int main(int argc, char* argv[]) {
         else
             strcpy(hint, "잘못된 값입니다.\n");
     
-    // 클라이언트에 보여질 힌트
-    if(write(client_sock, hint, sizeof(hint)) == -1)
-        error_handling("s-hint write error");
-        
+        // 클라이언트에 보여질 힌트
+        if(write(client_sock, hint, sizeof(hint)) == -1)
+            error_handling("s-hint write error");
     }
     
     // 바이트 오더링

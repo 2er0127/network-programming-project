@@ -55,16 +55,14 @@ int main(int argc, char* argv[]) {
         // 입력한 값과 정답 매칭
         if(read(sock, &hint, BUF_SIZE) == -1)
             error_handling("c-hint read error");
+        printf("%s\n", hint);
 
-        if(getNum == random) {
-            printf("%s\n", hint);
+        if(getNum == ntohl(random)) {
             if(read(sock, &count, sizeof(count)) == -1)
                 error_handling("c-count read error");
-            printf("%d\n", ntohl(count));
+            printf("%d 번만에 맞추셨습니다.\n", ntohl(count));
             break;
         }
-        else
-            printf("%s\n", hint);
     }
     
     printf("정답은 %d 였습니다 !!\n", ntohl(random));
