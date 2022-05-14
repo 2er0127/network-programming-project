@@ -45,6 +45,7 @@ int main(int argc, char* argv[]) {
     
     // 반복문 시작
     for(int i = 0; i < 20; i++) {
+        printf("%d 번째 시도\n", i + 1);
         printf("1에서 50사이의 숫자를 입력하세요 : ");
         scanf("%d", &getNum);
     

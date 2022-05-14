@@ -48,7 +48,7 @@ int main(int argc, char* argv[]) {
     
     srand(time(NULL));
     random = (rand() % 50) + 1; // 1~50사이의 랜덤 숫자를 생성하여 random 변수에 저장한다.
-    printf("%d\n", random);
+    printf("정답 : %d\n", random);
     
     // 바이트 오더링
     converted_random = htonl(random);
@@ -61,12 +61,14 @@ int main(int argc, char* argv[]) {
         if(read(client_sock, &getNum, sizeof(getNum)) == -1)
             error_handling("s-getNum read error");
     
+        printf("클라이언트에서 %d 번째 답을 입력 중입니다...\n", i + 1);
+        
         if(getNum > random)
             strcpy(hint, "입력하신 값보다 작습니다.\n");
         else if(getNum < random)
             strcpy(hint, "입력하신 값보다 큽니다.\n");
         else if(getNum == random) {
-            strcpy(hint, "정답입니다!\n");
+            strcpy(hint, "정답입니다 !!\n");
             count = i + 1;
             write(client_sock, (char*) &hint, sizeof(hint));
             break;
@@ -84,6 +86,8 @@ int main(int argc, char* argv[]) {
     converted_count = htonl(count);
     if(write(client_sock, &converted_count, sizeof(converted_count)) == -1)
         error_handling("s-count write error");
+    
+    printf("서버가 종료됩니다.\n");
     
     close(client_sock);
     close(serv_sock);
