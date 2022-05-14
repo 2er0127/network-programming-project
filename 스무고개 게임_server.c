@@ -14,6 +14,7 @@ int main(int argc, char* argv[]) {
     int random, getNum;
     char hint[BUF_SIZE];
     int count = 0;
+    int converted_random;
     int converted_count;
     int str_len;
     
@@ -49,7 +50,9 @@ int main(int argc, char* argv[]) {
     random = (rand() % 50) + 1; // 1~50사이의 랜덤 숫자를 생성하여 random 변수에 저장한다.
     printf("%d\n", random);
     
-    if(write(client_sock, &random, sizeof(random)) == -1)
+    // 바이트 오더링
+    converted_random = htonl(random);
+    if(write(client_sock, &converted_random, sizeof(converted_random)) == -1)
         error_handling("s-random write error");
     
     // 반복문 시작

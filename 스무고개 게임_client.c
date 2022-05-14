@@ -66,6 +66,9 @@ int main(int argc, char* argv[]) {
             printf("%s\n", hint);
     }
     
+    printf("정답은 %d 였습니다 !!\n", ntohl(random));
+    printf("게임이 종료됩니다.\n");
+    
     close(sock);
     
     return 0;
