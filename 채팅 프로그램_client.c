@@ -63,13 +63,16 @@ void *send_msg(void *arg) {
    
     // now connected ID list
     read(sock, client_array_name, strlen(client_array_name));
-    printf("현재 접속자 목록입니다 : %s\n", client_array_name);
+    printf("현재 접속자 목록입니다 %s\n", client_array_name);
     
     while(1) {
         fgets(msg, BUF_SIZE, stdin);
-        if(!strcmp(msg,"q\n") || !strcmp(msg,"Q\n")) {
+    if(!strcmp(msg, "@\n")) {
+        printf("now connected ID %s\n", client_array_name);
+    }
+        else if(!strcmp(msg,"q\n") || !strcmp(msg,"Q\n")) {
             sprintf(bye_disconnect, "%s 님의 연결이 끊어졌습니다.\n", name);
-        write(sock, bye_disconnect, strlen(bye_disconnect));
+            write(sock, bye_disconnect, strlen(bye_disconnect));
             close(sock);
             exit(0);
         }
