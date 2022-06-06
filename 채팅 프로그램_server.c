@@ -14,13 +14,17 @@ void send_msg(char *msg, int len);
 void error_handling(char *msg);
 
 int clnt_cnt = 0;
+int array_count = 0;
 int clnt_socks[MAX_CLNT];
 pthread_mutex_t mutx;
+char new_connect[BUF_SIZE];
+char client_array_name[BUF_SIZE];
 
 int main(int argc, char *argv[]) {
     int serv_sock, clnt_sock;
     struct sockaddr_in serv_adr, clnt_adr;
     int clnt_adr_sz;
+    char client_name[BUF_SIZE];
     pthread_t t_id;
     
     if(argc!=2) {
@@ -42,17 +46,29 @@ int main(int argc, char *argv[]) {
     if(listen(serv_sock, 5) == -1)
         error_handling("listen() error");
     
+    printf("클라이언트 연결 대기 중입니다.-----\n");
+
     while(1) {
         clnt_adr_sz = sizeof(clnt_adr);
         clnt_sock = accept(serv_sock, (struct sockaddr*)&clnt_adr, &clnt_adr_sz);
-        
+        read(clnt_sock, client_name, sizeof(client_name));
+        strcat(client_array_name, client_name);
+        strcat(client_array_name, ", ");
+        write(clnt_sock, client_array_name, sizeof(client_array_name));
+
         pthread_mutex_lock(&mutx);
         clnt_socks[clnt_cnt++] = clnt_sock;
         pthread_mutex_unlock(&mutx);
     
         pthread_create(&t_id, NULL, handle_clnt, (void*)&clnt_sock);
         pthread_detach(t_id);
-        printf("Connected client IP : %s \n", inet_ntoa(clnt_adr.sin_addr));
+
+        printf("Connected client IP : %s\n", inet_ntoa(clnt_adr.sin_addr));
+        printf("Connected socket number : %d\n", ntohs(clnt_adr.sin_port));
+        printf("Connected client name : %s\n", client_name);
+        printf("-----------------------------------------------\n");
+    
+        array_count++;
     }
     
     close(serv_sock);
@@ -68,7 +84,7 @@ void *handle_clnt(void *arg) {
         send_msg(msg, str_len);
     
     pthread_mutex_lock(&mutx);
-    for(int i = 0; i < clnt_cnt; i++) {// remove disconnected client
+    for(int i = 0; i < clnt_cnt; i++) {
         if(clnt_sock == clnt_socks[i]) {
             while(i++ < clnt_cnt-1)
                 clnt_socks[i] = clnt_socks[i+1];
@@ -81,7 +97,7 @@ void *handle_clnt(void *arg) {
     return NULL;
 }
 
-void send_msg(char *msg, int len) { // send to all
+void send_msg(char *msg, int len) {
     pthread_mutex_lock(&mutx);
     for(int i = 0; i < clnt_cnt; i++)
         write(clnt_socks[i], msg, len);
